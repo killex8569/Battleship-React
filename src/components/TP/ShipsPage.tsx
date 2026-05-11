@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from'react';
 import BattleshipService from'../../services/battleshipService';
 import { type Ship } from'../../types';
-import { Box, Heading, Text, VStack, Spinner, Alert } from
+import {Box, Heading, Text, VStack, Spinner, Alert, SimpleGrid} from
         '@chakra-ui/react';
 import ShipCard from "@/components/ShipCard.tsx";
 const ShipsPage: React.FC = () => {
@@ -40,19 +40,26 @@ const ShipsPage: React.FC = () => {
     }
     if (error) {
         return (
-            <Alert.Root status=
-                            "error">
-                <Alert.Indicator />
+            <Alert.Root status="error"><Alert.Indicator />
                 {error}
             </Alert.Root>
         );
     }
     return (
-        <Box p={5}>
-            <Heading as="h1" mb={6}>Liste des navires</Heading>
-            {ships.map((ship) => (
-                <ShipCard key={ship.id} ship={ship} />
-            ))}
+        <Box h="100vh" p={6} display="flex" flexDirection="column">
+            {/* Header */}
+            <Box mb={6}>
+                <Heading as="h1">Liste des navires</Heading>
+            </Box>
+
+            {/* Content */}
+            <Box flex="1" overflowY="auto">
+                <SimpleGrid columns={[1, 2, 3,4]} spacing={4}>
+                    {ships.map((ship) => (
+                        <ShipCard key={ship.id} ship={ship} />
+                    ))}
+                </SimpleGrid>
+            </Box>
         </Box>
     );
 };
