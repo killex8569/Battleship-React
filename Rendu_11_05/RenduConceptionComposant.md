@@ -59,4 +59,4 @@ Si on faisait un call API directement dans **ShipCard** ça serait potentielleme
 
 ## Rôle de useEffect
 
-//TODO
+On utilise useEffect pour dissocier la récupération des données du render de la page. Ainsi, on évite une boucle infernale de render qui appelle l'api qui attent une promise et quand la promise est verifiée, relance le render qui relance l'appel à l'api ect ect
