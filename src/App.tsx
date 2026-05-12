@@ -33,6 +33,7 @@ function App() {
         </Alert.Root>
       </div>
         <a href={"/ships/"}><h2>Cliquer ici pour voir la listes des bateaux</h2></a>
+        <a href={"/login/"}><h2>Cliquer ici pour se login</h2></a>
       <div className="grid">
         <a
           href="https://react.dev"

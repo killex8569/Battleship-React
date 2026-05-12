@@ -24,6 +24,9 @@ const ShipCard = ({ ship }: ShipCardProps) => {
                 <Text>
                     Taille : <b>{ship.lenght}</b> cases
                 </Text>
+                <Text>
+                    <b>{ship.tacticalName}</b>
+                </Text>
             </Stack>
         </Box>
     );

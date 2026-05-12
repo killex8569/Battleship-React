@@ -20,4 +20,20 @@ export default class BattleshipService {
             })
             .catch((e)=> Promise.reject(e));
     }
+    static login(name: string, password: string): Promise<any> {
+        return axiosInstance
+            .post('/api/auth/login', {
+                name,
+                password
+            })
+            .then((resp) => {
+
+                const token = resp.data.token.access_token;
+
+                // stockage
+                localStorage.setItem("token", token);
+                return resp.data;
+            })
+            .catch((e) => Promise.reject(e));
+    }
 }
