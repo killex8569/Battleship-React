@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from'react';
-import BattleshipService from'../../services/battleshipService';
-import { type Ship } from'../../types';
-import {Box, Heading, Text, VStack, Spinner, Alert, SimpleGrid} from
+import BattleshipService from'@/services/battleshipService';
+import { type Ship } from '@/types.ts';
+import {Box, Heading, Text, Spinner, Alert, SimpleGrid} from
         '@chakra-ui/react';
 import ShipCard from "@/components/ShipCard.tsx";
 const ShipsPage: React.FC = () => {
@@ -54,7 +54,7 @@ const ShipsPage: React.FC = () => {
 
             {/* Content */}
             <Box flex="1" overflowY="auto">
-                <SimpleGrid columns={[1, 2, 3,4]} spacing={4}>
+                <SimpleGrid columns={[1, 2, 3,4]} >
                     {ships.map((ship) => (
                         <ShipCard key={ship.id} ship={ship} />
                     ))}

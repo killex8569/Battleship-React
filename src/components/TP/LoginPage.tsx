@@ -1,23 +1,20 @@
-import React, { useState } from'react';
+import React, {useState} from 'react';
+import { useNavigate } from 'react-router'
 import BattleshipService from'../../services/battleshipService';
-import {
-    Box,
-    Button,
-    Input,
-    Heading,
-    VStack,
-    Field
-} from'@chakra-ui/react';
+import {Box, Button, Input, Heading, VStack, Field} from '@chakra-ui/react';
 const LoginPage: React.FC = () => {
-// État pour stocker la valeur du nom d'utilisateur
+    // État pour stocker la valeur du nom d'utilisateur
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
-// Fonction pour gérer la soumission du formulaire
+    const navigate = useNavigate();
+
+
+    // Fonction pour gérer la soumission du formulaire
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         try {
             const data = await BattleshipService.login(name, password);
+            navigate("/landingPage");
             console.log("Login OK:", data);
 
             // ex: stocker token, redirect, etc.

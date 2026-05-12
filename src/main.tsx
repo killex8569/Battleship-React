@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { Provider } from "@/components/ui/provider"
 import ShipsPage from "@/components/TP/ShipsPage.tsx";
 import LoginPage from "@/components/TP/LoginPage.tsx";
+import LandingPage from "@/components/LandingPage.tsx";
 
 
 createRoot(document.getElementById('root')!).render(
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />} />
+            <Route path="/landingPage" element={<LandingPage />} />
           <Route path="/ships/" element={<ShipsPage />} />
             <Route path="/login/" element={<LoginPage />} />
         </Routes>

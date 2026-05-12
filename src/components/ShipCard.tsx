@@ -1,5 +1,5 @@
 import {Box, Heading, Text, Stack} from '@chakra-ui/react';
-import { type Ship } from'../types';
+import { type Ship } from'@/types.ts';
 interface ShipCardProps {
     key: number,
     ship: Ship;
@@ -19,7 +19,7 @@ const ShipCard = ({ ship }: ShipCardProps) => {
                 boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
             }}
         >
-            <Stack spacing={2}>
+            <Stack>
                 <Heading size="md">🚢 {ship.name}</Heading>
                 <Text>
                     Taille : <b>{ship.lenght}</b> cases
