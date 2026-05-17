@@ -1,5 +1,5 @@
 import {Box, Heading, Text, Stack} from '@chakra-ui/react';
-import { type Ship } from'@/types.ts';
+import { type Ship } from '@/types.ts';
 interface ShipCardProps {
     key: number,
     ship: Ship;

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from'react';
-import BattleshipService from'@/services/battleshipService';
-import { type Ship } from '@/types.ts';
-import {Box, Heading, Text, Spinner, Alert, SimpleGrid} from
-        '@chakra-ui/react';
-import ShipCard from "@/components/ShipCard.tsx";
+import BattleshipService from '../services/battleshipService.ts';
+import type {Ship} from '../types.ts';
+import {Box, Heading, Text, Spinner, Alert, SimpleGrid} from '@chakra-ui/react';
+import ShipCard from './ShipCard';
 const ShipsPage: React.FC = () => {
 // État pour stocker la liste des navires
     const [ships, setShips] = useState<Ship[]>([]);
