@@ -26,15 +26,14 @@ export default class BattleshipService {
     }
 
     // ── Auth ──────────────────────────────────────────────────────────────────
-    static login(name: string, password: string): Promise<any> {
-        return axiosInstance
-            .post('/api/auth/login', { name, password })
-            .then((resp) => {
-                const token = resp.data.token.access_token;
-                localStorage.setItem("token", token);
-                return resp.data;
-            })
-            .catch(e => Promise.reject(e));
+    static async login(name: string, password: string): Promise<any> {
+        const resp = await axiosInstance.post('/api/auth/login', { name, password });
+        const token = resp.data.token.access_token;
+        localStorage.setItem("token", token);
+        const me = await axiosInstance.get('/api/auth/me');
+        localStorage.setItem("userId", String(me.data.id));
+        localStorage.setItem("userName", me.data.name);
+        return resp.data;
     }
 
     // ── Lobby ─────────────────────────────────────────────────────────────────

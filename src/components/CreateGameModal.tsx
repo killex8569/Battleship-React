@@ -33,6 +33,7 @@ const CreateGameModal: React.FC<CreateGameModalProps> = ({ onClose }) => {
         setLoading(true);
         try {
             const game = await BattleshipService.createGame(gridSize, shipCount);
+            await BattleshipService.joinGame(game.id);
             navigate(`/game/${game.id}`);
         } catch (err) {
             console.error("Erreur createGame:", err);

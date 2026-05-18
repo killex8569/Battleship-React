@@ -202,21 +202,15 @@ const Lobby: React.FC = () => {
         return () => clearInterval(tick);
     }, [lastRefresh]);
 
-    /**
     const handleJoin = async (gameId: number) => {
         setJoining(gameId);
         try {
-            // TODO: remplacer par BattleshipService.joinGame(gameId)
             await BattleshipService.joinGame(gameId);
             navigate(`/game/${gameId}`);
         } catch (err) {
             console.error("Erreur join:", err);
             setJoining(null);
         }
-    };
-    */
-    const handleJoin = async (gameId: number) => {
-        navigate(`/game/${gameId}`);
     };
     return (
         <Center

@@ -1,5 +1,5 @@
 export type TileState = 'empty' | 'ship' | 'hit' | 'miss' | 'sunk';
-export type GameStatus = 'waiting' | 'playing' | 'finished';
+export type GameStatus = 'waiting' | 'placement' | 'started' | 'finished';
 
 export interface Tile {
     row: number;
