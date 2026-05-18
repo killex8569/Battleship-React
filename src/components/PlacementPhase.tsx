@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Box, Button, HStack, VStack, Text, Center } from '@chakra-ui/react';
+import { Box, Button, Grid, HStack, VStack, Text, Center } from '@chakra-ui/react';
 import type { Game } from '@/types';
 import BattleshipService from '@/services/battleshipService';
 
@@ -216,11 +216,11 @@ const PlacementPhase: React.FC<Props> = ({ game, gameId }) => {
                                     <Box w="24px" flexShrink={0} textAlign="right" pr="4px">
                                         <Text fontFamily="'Courier New', monospace" fontSize="9px" color={NAVY.textDim}>{rIdx + 1}</Text>
                                     </Box>
-                                    <HStack gap={0} flex={1}>
+                                    <Grid templateColumns={`repeat(${game.gridSize}, 1fr)`} gap={0} flex={1}>
                                         {row.map((cellState, cIdx) => (
                                             <Box
                                                 key={cIdx}
-                                                flex={1}
+                                                w="100%"
                                                 paddingBottom="100%"
                                                 position="relative"
                                                 border={`1px solid ${NAVY.border}`}
@@ -233,7 +233,7 @@ const PlacementPhase: React.FC<Props> = ({ game, gameId }) => {
                                                 onMouseLeave={() => setHoverCell(null)}
                                             />
                                         ))}
-                                    </HStack>
+                                    </Grid>
                                 </HStack>
                             ))}
                         </VStack>
