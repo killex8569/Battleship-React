@@ -202,6 +202,7 @@ const Lobby: React.FC = () => {
         return () => clearInterval(tick);
     }, [lastRefresh]);
 
+    /**
     const handleJoin = async (gameId: number) => {
         setJoining(gameId);
         try {
@@ -213,7 +214,10 @@ const Lobby: React.FC = () => {
             setJoining(null);
         }
     };
-
+    */
+    const handleJoin = async (gameId: number) => {
+        navigate(`/game/${gameId}`);
+    };
     return (
         <Center
             minH="100vh"

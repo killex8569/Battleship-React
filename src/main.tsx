@@ -8,6 +8,7 @@ import ShipsPage from "./components/ShipsPage.tsx";
 import LoginPage from "./components/LoginPage.tsx";
 import Hub from "./components/Hub.tsx";
 import Lobby from "@/components/Lobby.tsx";
+import GamePage from "@/components/GamePage.tsx";
 
 
 createRoot(document.getElementById('root')!).render(
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/ships/" element={<ShipsPage />} />
             <Route path="/login/" element={<LoginPage />} />
             <Route path="/lobby" element={<Lobby />} />
+            <Route path="/game/:gameId" element={<GamePage />} />
         </Routes>
       </BrowserRouter>
     </Provider>
