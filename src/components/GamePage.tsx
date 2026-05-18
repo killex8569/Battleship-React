@@ -34,15 +34,25 @@ const buildEmptyGrid = (size: number): Tile[][] =>
         Array.from({ length: size }, (_, col) => ({ row, col, state: 'empty' as const }))
     );
 
-const buildGridFromApi = (apiBoard: any[], gridSize: number): Tile[][] => {
+const buildGridFromApi = (apiBoard: any[], gridSize: number, sunkShips: any[] = []): Tile[][] => {
     const grid = buildEmptyGrid(gridSize);
     apiBoard.forEach((cell: any) => {
         const row = cell.y;
         const col = cell.x;
         if (grid[row]?.[col]) {
-            if (cell.result === 'hit')       grid[row][col].state = 'hit';
+            if (cell.result === 'sunk')      grid[row][col].state = 'hit';
+            else if (cell.result === 'hit')  grid[row][col].state = 'hit';
             else if (cell.result === 'miss') grid[row][col].state = 'miss';
             else if (cell.shipId)            grid[row][col].state = 'ship';
+        }
+    });
+    // Overlay all cells of sunk ships as 'sunk'
+    sunkShips.forEach((ship: any) => {
+        if (ship.x == null) return;
+        for (let i = 0; i < ship.length; i++) {
+            const sx = ship.orientation === 'horizontal' ? ship.x + i : ship.x;
+            const sy = ship.orientation === 'horizontal' ? ship.y     : ship.y + i;
+            if (grid[sy]?.[sx]) grid[sy][sx].state = 'sunk';
         }
     });
     return grid;
@@ -55,7 +65,7 @@ const buildShipsFromApi = (apiShips: any[]): Ship[] =>
         tacticalName: s.tacticalName ?? '',
         length: s.length,
         size: s.length,
-        isSunk: s.status === 'sunk',
+        isSunk: s.status === 'sunk' || s.sunk === true,
         hits: s.hitCount ?? 0,
         cells: [],
     }));
@@ -156,29 +166,29 @@ const GamePage: React.FC = () => {
         }
     }, [gameId, currentUserId]);
 
-    const fetchBoards = useCallback(async () => {
+    const fetchBoardsAndShips = useCallback(async () => {
         if (!gameId || !game) return;
         try {
-            const myBoard = await BattleshipService.getMyBoard(gameId);
+            const [myBoard, oppBoard, mine, opponent] = await Promise.all([
+                BattleshipService.getMyBoard(gameId),
+                BattleshipService.getOpponentBoard(gameId),
+                BattleshipService.getMyShips(gameId),
+                BattleshipService.getOpponentShips(gameId).catch(() => []),
+            ]);
+
+            const myShipList  = buildShipsFromApi(mine);
+            const oppShipList = buildShipsFromApi(opponent);
+            setMyShips(myShipList);
+            setOpponentShips(oppShipList);
+
             setMyGrid(buildGridFromApi(myBoard, game.gridSize));
-            const oppBoard = await BattleshipService.getOpponentBoard(gameId);
-            setOpponentGrid(buildGridFromApi(oppBoard, game.gridSize));
+
+            const sunkOppShips = opponent.filter((s: any) => s.sunk && s.x != null);
+            setOpponentGrid(buildGridFromApi(oppBoard, game.gridSize, sunkOppShips));
         } catch (err) {
-            console.error('fetchBoards error:', err);
+            console.error('fetchBoardsAndShips error:', err);
         }
     }, [gameId, game]);
-
-    const fetchShips = useCallback(async () => {
-        if (!gameId) return;
-        try {
-            const mine = await BattleshipService.getMyShips(gameId);
-            setMyShips(buildShipsFromApi(mine));
-            const opponent = await BattleshipService.getOpponentShips(gameId);
-            setOpponentShips(buildShipsFromApi(opponent));
-        } catch {
-            // Ships endpoint may not be available in all states
-        }
-    }, [gameId]);
 
     useEffect(() => {
         fetchGameState();
@@ -188,12 +198,11 @@ const GamePage: React.FC = () => {
 
     useEffect(() => {
         if (game?.status === 'started' || game?.status === 'finished') {
-            fetchBoards();
-            fetchShips();
-            const interval = setInterval(() => { fetchBoards(); fetchShips(); }, POLL_INTERVAL);
+            fetchBoardsAndShips();
+            const interval = setInterval(fetchBoardsAndShips, POLL_INTERVAL);
             return () => clearInterval(interval);
         }
-    }, [game?.status, fetchBoards, fetchShips]);
+    }, [game?.status, fetchBoardsAndShips]);
 
     useEffect(() => {
         if (game) {
@@ -208,18 +217,15 @@ const GamePage: React.FC = () => {
         setMessage(`Tir en cours sur ${String.fromCharCode(65 + col)}${row + 1}...`);
         try {
             const result = await BattleshipService.fire(gameId!, row, col);
-            setOpponentGrid(prev => {
-                const next = prev.map(r => r.map(t => ({ ...t })));
-                next[row][col].state = result.result === 'hit' ? 'hit' : 'miss';
-                return next;
-            });
-            setMessage(result.result === 'hit'
-                ? `Touché en ${String.fromCharCode(65 + col)}${row + 1} !`
-                : `Raté en ${String.fromCharCode(65 + col)}${row + 1}.`
-            );
+            if (result.result === 'miss') {
+                setMessage(`Raté en ${String.fromCharCode(65 + col)}${row + 1}.`);
+            } else if (result.result === 'sunk') {
+                setMessage(`Coulé en ${String.fromCharCode(65 + col)}${row + 1} !`);
+            } else {
+                setMessage(`Touché en ${String.fromCharCode(65 + col)}${row + 1} !`);
+            }
             await fetchGameState();
-            await fetchBoards();
-            await fetchShips();
+            await fetchBoardsAndShips();
         } catch (err) {
             setMessage('Erreur lors du tir. Réessayez.');
         } finally {
