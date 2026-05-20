@@ -43,6 +43,8 @@ interface Game {
     currentTurnPlayerId: number | null;
     winnerPlayerId: number | null;
     createdAt: string;
+    player1: { id: number; name: string };
+    player2: { id: number; name: string } | null;
 }
 
 const StatBadge: React.FC<{ label: string; value: string | number }> = ({ label, value }) => (
@@ -68,12 +70,14 @@ const StatBadge: React.FC<{ label: string; value: string | number }> = ({ label,
     </VStack>
 );
 
-const GameCard: React.FC<{ game: Game; onJoin: (id: number) => void; joining: number | null }> = ({
+const GameCard: React.FC<{ game: Game; onJoin: (id: number) => void; joining: number | null; currentUserId: number }> = ({
                                                                                                       game,
                                                                                                       onJoin,
                                                                                                       joining,
+                                                                                                      currentUserId,
                                                                                                   }) => {
     const isJoining = joining === game.id;
+    const isMyGame = game.player1?.id === currentUserId;
 
     const formatDate = (raw: string) => {
         const d = new Date(raw.replace(' ', 'T'));
@@ -101,8 +105,8 @@ const GameCard: React.FC<{ game: Game; onJoin: (id: number) => void; joining: nu
                         w="6px"
                         h="6px"
                         borderRadius="50%"
-                        bg={NAVY.accent}
-                        boxShadow={`0 0 6px ${NAVY.accent}`}
+                        bg={isMyGame ? NAVY.yellow : NAVY.accent}
+                        boxShadow={`0 0 6px ${isMyGame ? NAVY.yellow : NAVY.accent}`}
                         flexShrink={0}
                     />
                     <Text
@@ -114,6 +118,16 @@ const GameCard: React.FC<{ game: Game; onJoin: (id: number) => void; joining: nu
                     >
                         PARTIE #{String(game.id).padStart(4, '0')}
                     </Text>
+                    {game.player1 && (
+                        <Text
+                            fontFamily="'Courier New', monospace"
+                            fontSize="9px"
+                            color={isMyGame ? NAVY.yellow : NAVY.textDim}
+                            letterSpacing="0.08em"
+                        >
+                            par {isMyGame ? 'vous' : game.player1.name}
+                        </Text>
+                    )}
                 </HStack>
                 <Text
                     fontFamily="'Courier New', monospace"
@@ -134,11 +148,11 @@ const GameCard: React.FC<{ game: Game; onJoin: (id: number) => void; joining: nu
                 </HStack>
 
                 <Button
-                    onClick={() => onJoin(game.id)}
-                    disabled={isJoining}
-                    bg={NAVY.accentGlow}
-                    border={`1px solid ${NAVY.accent}`}
-                    color={NAVY.accent}
+                    onClick={() => !isMyGame && onJoin(game.id)}
+                    disabled={isJoining || isMyGame}
+                    bg={isMyGame ? "transparent" : NAVY.accentGlow}
+                    border={`1px solid ${isMyGame ? NAVY.border : NAVY.accent}`}
+                    color={isMyGame ? NAVY.textDim : NAVY.accent}
                     borderRadius="2px"
                     fontFamily="'Courier New', monospace"
                     fontWeight="700"
@@ -147,13 +161,14 @@ const GameCard: React.FC<{ game: Game; onJoin: (id: number) => void; joining: nu
                     textTransform="uppercase"
                     px={5}
                     py={4}
-                    opacity={isJoining ? 0.5 : 1}
-                    _hover={isJoining ? {} : { opacity: 0.85, transform: "translateY(-1px)" }}
-                    _active={{ transform: "scale(0.98)" }}
+                    opacity={(isJoining || isMyGame) ? 0.5 : 1}
+                    cursor={isMyGame ? "not-allowed" : "pointer"}
+                    _hover={isJoining || isMyGame ? {} : { opacity: 0.85, transform: "translateY(-1px)" }}
+                    _active={isMyGame ? {} : { transform: "scale(0.98)" }}
                     transition="all 0.15s ease"
                     flexShrink={0}
                 >
-                    {isJoining ? "..." : "→ Rejoindre"}
+                    {isJoining ? "..." : isMyGame ? "Votre partie" : "→ Rejoindre"}
                 </Button>
             </HStack>
         </Box>
@@ -162,6 +177,7 @@ const GameCard: React.FC<{ game: Game; onJoin: (id: number) => void; joining: nu
 
 const Lobby: React.FC = () => {
     const navigate = useNavigate();
+    const currentUserId = Number(localStorage.getItem('userId') ?? 0);
     const [games, setGames] = useState<Game[]>([]);
     const [loading, setLoading] = useState(true);
     const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
@@ -407,6 +423,7 @@ const Lobby: React.FC = () => {
                                 game={game}
                                 onJoin={handleJoin}
                                 joining={joining}
+                                currentUserId={currentUserId}
                             />
                         ))
                     )}

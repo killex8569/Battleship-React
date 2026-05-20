@@ -2,7 +2,7 @@ import axios from 'axios';
 import { type Ship } from '../types';
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080/",
+    baseURL: "http://10.167.6.237:8080",
 });
 
 // Injecte le token JWT sur chaque requête
