@@ -1,8 +1,10 @@
 import croiseur from './assets/ships/croiseur-min.jpg'
 import './App.css'
 import { Alert } from '@chakra-ui/react'
+import BattleshipService from "@/services/battleshipService.ts";
 
 function App() {
+ BattleshipService.getShips();
   return (
     <main className="main">
       <div className="description">
@@ -30,7 +32,8 @@ function App() {
           </Alert.Content>
         </Alert.Root>
       </div>
-
+        <a href={"/ships/"}><h2>Cliquer ici pour voir la listes des bateaux</h2></a>
+        <a href={"/login/"}><h2>Cliquer ici pour se login</h2></a>
       <div className="grid">
         <a
           href="https://react.dev"
